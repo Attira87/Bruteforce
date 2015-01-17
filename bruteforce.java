@@ -18,6 +18,7 @@ import java.util.Date;
  * 	-find all combinations of all lengths from 1 to L
  * 
  * 
+ *
  */
 
 
@@ -31,14 +32,14 @@ public class bruteforce {
 	static char [] testChar = "qwerty".toCharArray();
 	static char [] letters = "abcd".toCharArray();
 	static char [] testnum = "123".toCharArray();
-	static String command, filename, platform, line;
+	static String command, filename, platform, line, start;
 	static String usageString = "Usage: bruteforce [-options] [arguments]"
 			+ "\noptions:\n-gen\t\tgenerate passwords\n-bf\t\tbrute force attack a file\n-entropy\tcalculate entropy";
 	public static void main(String[] args) throws IOException, InterruptedException{
-		filename = args[1];
-		platform = System.getProperty("os.name").toLowerCase();
+		
+		
 
-		System.out.println(platform);
+		
 		
 		/* Below is a list of commands to run to extract and verify zip files with unzip (on Unix) and 7zip (on Unix and Windows)
 		 * to extract 1.zip with pass qwerty2 with 7zip:	"7za x " + "1.zip" + " -pqwerty2 -y", x extract, -p password(no space), -y yes to all prompts
@@ -53,6 +54,12 @@ public class bruteforce {
 		
 		if(args.length == 0)System.out.println(usageString);
 		else{
+			filename = args[1];
+			platform = System.getProperty("os.name").toLowerCase();
+			System.out.println(platform);
+			
+			if(args.length == 5) start = args[4];
+			else start = "";
 			/*
 			 * 0 - option, 1 - zipfile, 2 - min pass length, 3 - max pass length
 			 */
@@ -61,19 +68,24 @@ public class bruteforce {
 							break;
 			case "-bf":		if(platform.contains("linux") || platform.contains("mac")){
 								command = "unzip -tq -P ";
-								nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+								//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+								printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
+								
 							}else if(platform.contains("windows")){
 								command = "7za t " + filename + " -p";
-								nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+								//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+								printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
 							}else System.out.println("Unsupported OS.");
 							break;
 			case "-bf--7zip":	command = "7za t " + filename + " -p"; 	//tests the archive without unpacking, a bit faster
 								//command = "7za x " + filename + " -p";	//unpacks the archive, slower 
-								nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+								//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+							printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
 
 							break;
 			case "-bf--unzip":	command = "unzip -tq -P ";	//force unzip
-							nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+							//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+							printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
 							break;
 			case "-entropy"://execute entropy method;
 							break;
@@ -86,6 +98,34 @@ public class bruteforce {
 		
 		
 	}
+	public static void printAll(char[] c, int min, int max, String start) throws IOException{
+		
+		int loop; //stores the starting size of password
+		if(start=="") loop = min;
+		else loop = start.length();
+			
+		for(int i = loop; i<=max; ++i){
+			printAll(c, i, start);
+		}
+	}
+	
+	public static void printAll(char[] c, int n, String start) throws IOException{
+		  if(start.length() >= n){
+			  System.out.println(start);
+			  if(platform.contains("linux") || platform.contains("mac")){
+				  //pr = run.exec(command+start + " " + filename);
+			  }
+			  else if(platform.contains("windows")){
+					  pr = run.exec(command+start + " -y");
+			  }
+				
+		  }else{
+		    for(char x: c){ 
+		      printAll(c, n, start+x);
+		    }
+		  }
+		}
+	
 	public static void nPr(char [] c, int min, int max) throws IOException, InterruptedException{
 		//TO DO: IMPLEMENT STARTING PASSWORD OPTION AND PLUG INTO THE INDEX ARRAYLIST
 //		int maxlength = 10;

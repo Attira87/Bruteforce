@@ -18,7 +18,6 @@ import java.util.Date;
  * 	-find all combinations of all lengths from 1 to L
  * 
  * 
- *
  */
 
 

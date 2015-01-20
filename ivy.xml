@@ -1,0 +1,24 @@
+<ivy-module version="2.0">
+
+
+	<info 
+		organisation="uk.ac.glasgow"
+		module="senotes.workshop.jbehave"
+	/>
+	
+	<dependencies>
+			
+		<dependency org="org.jbehave" name="jbehave-core" rev="3.9" >
+			<artifact name="jbehave-core" type="jar"/>
+			<artifact name="jbehave-core-3.9-resources"  type="zip"/>			
+		</dependency>
+
+		<dependency org="org.jbehave.site" name="jbehave-site-resources" rev="3.1.1">
+			<artifact name="jbehave-site-resources" type="zip"/>
+		</dependency>
+
+	</dependencies>
+		
+
+
+</ivy-module>

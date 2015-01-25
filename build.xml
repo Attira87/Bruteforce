@@ -101,7 +101,7 @@
 		name="test"
 		description="Invokes the project's suite of JUnit test cases"
 		depends="compile">
-		
+		<formatter type="xml" />
 		<junit			
 			printsummary="yes"
 		>

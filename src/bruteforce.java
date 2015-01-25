@@ -21,7 +21,6 @@ import java.util.Date;
  */
 
 
-
 public class bruteforce {
 	static Process pr;
 	static Runtime run;

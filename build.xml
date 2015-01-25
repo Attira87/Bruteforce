@@ -101,12 +101,13 @@
 		name="test"
 		description="Invokes the project's suite of JUnit test cases"
 		depends="compile">
-		<formatter type="xml" />
+		
 		<junit			
 			printsummary="yes"
 		>
 			<classpath refid="project.classpath"/>
 			<test name="test.bruteforceTest"/>
+			<formatter type="xml" />
 		</junit>
 	
 	</target>

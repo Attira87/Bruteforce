@@ -5,21 +5,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 
-/*
- * This program is designed to run on Linux, Windows or Mac.
- * It uses 7zip on Windows and unzip on Linux and Mac. The desired zip tool can also be forced with command line arguments
- */
-		//-gen length : generate passwords
-		//-bf : brute force attack a file
 
-/*
- * cases for brute force:
- * 	n size charset, length L:
- * 	-find all combinations of length L only
- * 	-find all combinations of all lengths from 1 to L
- * 
- * 
- */
 public class Bruteforce {
 	static Process pr;
 	static Runtime run;
@@ -63,7 +49,6 @@ public class Bruteforce {
 			case "-gen":	//execute gen method ;
 							break;
 			case "-bf":		
-								
 							PassGen myPassGen = new PassGen(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
 							ArchiveTester archiveTester = new ArchiveTester(filename);
 							boolean found = false;
@@ -74,8 +59,9 @@ public class Bruteforce {
 									System.out.printf("Password found: %s", password);
 									break;
 								}
-								System.out.println("Password not found");
+								
 							}
+							System.out.println("Password not found");
 							//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
 							//printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
 
@@ -103,6 +89,9 @@ public class Bruteforce {
 		
 		
 	}
+
+	//From http://stackoverflow.com/questions/13157656/permutation-of-an-array-with-repetition-in-java
+	//Most likely won't use
 	public static void printAll(char[] c, int min, int max, String start) throws IOException{
 		
 		int loop; //stores the starting size of password
@@ -131,111 +120,8 @@ public class Bruteforce {
 		  }
 		}
 	
-	public static void nPr(char [] c, int min, int max) throws IOException, InterruptedException{
-		//TO DO: IMPLEMENT STARTING PASSWORD OPTION AND PLUG INTO THE INDEX ARRAYLIST
-		
-		for(int i = min; i<=max; i++){
-			//An ArrayList of ints is used to store the int representation of the current permutation
-			//and index into the char array to retrieve the current state.
-			ArrayList<Integer> index = new ArrayList<Integer>(c.length);		
-			for(int j = 0; j<i;j++) index.add(0);
-			
-			//this function is called for each password length
-			nPr(c, index);
-		}
-		
 	
-	}
-	
-	//for charset c and length x the nPr method needs to be called x times with lengths x-(x-1), x-(x-2)....x-(x-x)
-	//e.g. for charset abcd and password length 3 nPr needs to be called 3 times, once for each length 1, 2 and 3.
-	//for(int i = 1; i < x; i++) nPr (c,i); // where x is the requested password length and c is charset.
-	
-	
-	public static void nPr(char [] c, ArrayList<Integer> z) throws IOException, InterruptedException{
-		double perm = Math.pow(c.length, z.size());		// the number of permutations is defined by n^r where n is the
-											//number of choices and r the number of selections
-		double total = 0.0;
-		
-		Date d;
-		
-		
-		run = Runtime.getRuntime();
-
-		System.out.println(perm);
-		String s="";
-		
-		//int a=0;
-		
-		int currenti = z.size()-1;
-
-
-		while(true){
-			
-			s="";
-			total+=1;
-			
-			for(int a=0; a<z.size();a++){
-
-				s+=c[z.get(a)];
-				//System.out.printf("%s",c[z.get(a)]);	//THIS IS WHERE PASSWORDS GET PRINTED OUT
-			}
-			if(total%100==0){ 
-				System.out.printf("%.2f%% %s \n",(total/perm)*100.0,s);		
-			}
-			
-			if(platform.contains("linux") || platform.contains("mac")){
-				pr = run.exec(command+s + " " + filename);
-			}else if(platform.contains("windows")){
-				pr = run.exec(command+s + " -y");
-			}
-			pr.waitFor();																			
-			BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));	
-																									
-			while(( line = buf.readLine()) != null ) 												
-			{																						
-			  //System.out.println(line);															
-			  if(line.contains("Everything is Ok") || line.contains("No errors detected")){			
-				  System.out.println("SUCCESS!!!");													
-				  System.out.println(s);															
-				  System.exit(0);																	
-			  }																						
-			}																						
-
-
-			
-			//if last char reached max, reset it to start, iteratively check if prev char can be incremented,
-			//increment prev char, reset pointer
-			
-			
-			if(z.get(currenti).intValue()==c.length-1){
-				//System.out.println();
-
-				while(z.get(currenti).intValue()==c.length-1){
-					z.set(currenti,0);
-					currenti--;
-					
-					
-					if(currenti==-1)
-						break;
-	
-				}
-				if(currenti==-1)
-					break;
-				z.set(currenti,z.get(currenti)+1);
-				currenti=z.size()-1;
-			}else{
-				z.set(currenti, z.get(currenti)+1);
-
-			}
-
-		}
-
-		
-	}
-	
-	
-	//not using these at the moment, may use in the future for not repeated characters 
+	//not using these at the moment, may use in the future for non repeated characters 
 	public static void permutation(String str) throws IOException { 
 	    permutation("", str); 
 	}

@@ -15,7 +15,7 @@ public class ArchiveTester {
 	 * @return
 	 */
 	public boolean testPass(String password){
-		
+		System.out.println(password);
 		return false;
 	}
 

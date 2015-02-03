@@ -1,109 +1,76 @@
-import java.io.IOException;
 import java.util.ArrayList;
 
-
-/*
- * Doesn't work yet
+/**
+ * Generates passwords from min to max from a given charset
+ * TO DO: IMPLEMENT STARTING PASSWORD OPTION AND PLUG INTO THE INDEX ARRAYLIST
+ * TO DO: RUN IN MULTIPLE THREADS
  */
-public class PassGen implements Password{
+public class PassGen implements Password {
 	char[] charset;
-	int min, max;
-	
+	int min, max, indexSize, current;
+	ArrayList<Integer> index;
+	boolean lastReached;
 	
 	public PassGen(char[] c, int min, int max){
 		this.charset = c;
 		this.min = min;
+		this.indexSize = min;
 		this.max = max;
+		
+		this.lastReached = false;
+		index = new ArrayList<Integer>(indexSize);
+		for(int i = 0; i < indexSize; i++) index.add(0);
+		
+		this.current = index.size() - 1;
+		
 	}
-	
-	
-	
+
 	@Override
-	public String nextPassword() throws IOException, InterruptedException {
+	public String nextPassword() {
 
-		for(int i = min; i<=max; i++){
-			//An ArrayList of ints is used to store the int representation of the current permutation
-			//and index into the char array to retrieve the current state.
-			ArrayList<Integer> index = new ArrayList<Integer>(charset.length);		
-			for(int j = 0; j<i;j++) index.add(0);
-			
-			//this function is called for each password length
-			nPr(charset, index);
+		if(lastReached) return null;
+		
+		String s = "";
+		
+		//example starting pass for charset abcd and length 3: aa(a)
+		//brackets indicate where 'current' is currently pointing
+		
+		//builds the string representation of current password
+		for(int i=0; i<index.size(); i++){
+			s += charset[index.get(i)];
 		}
+		//at this point s contains current password
 		
-		return null;
-	}
-	
-	public static void nPr(char [] c, int min, int max) throws IOException, InterruptedException{
-		//TO DO: IMPLEMENT STARTING PASSWORD OPTION AND PLUG INTO THE INDEX ARRAYLIST
-		
-		for(int i = min; i<=max; i++){
-			//An ArrayList of ints is used to store the int representation of the current permutation
-			//and index into the char array to retrieve the current state.
-			ArrayList<Integer> index = new ArrayList<Integer>(c.length);		
-			for(int j = 0; j<i;j++) index.add(0);
-			
-			//this function is called for each password length
-			nPr(c, index);
-		}
-		
-	
-	}
-	
-	//for charset c and length x the nPr method needs to be called x times with lengths x-(x-1), x-(x-2)....x-(x-x)
-	//e.g. for charset abcd and password length 3 nPr needs to be called 3 times, once for each length 1, 2 and 3.
-	//for(int i = 1; i < x; i++) nPr (c,i); // where x is the requested password length and c is charset.
-	
-	
-	public static void nPr(char [] c, ArrayList<Integer> z) throws IOException, InterruptedException{
-
-
-		String s="";
-		
-
-		
-		int currenti = z.size()-1;
-
-
-		while(true){
-			
-			s="";
-
-			
-			for(int a=0; a<z.size();a++){
-
-				s+=c[z.get(a)];
-				//System.out.printf("%s",c[z.get(a)]);	//THIS IS WHERE PASSWORDS GET PRINTED OUT
-			}
-
-			//if last char reached max, reset it to start, iteratively check if prev char can be incremented,
-			//increment prev char, reset pointer
-			
-			
-			if(z.get(currenti).intValue()==c.length-1){
-				//System.out.println();
-
-				while(z.get(currenti).intValue()==c.length-1){
-					z.set(currenti,0);
-					currenti--;
+		//increment to next position
+		if(index.get(current).intValue()==charset.length-1){ // if aa(d), i.e. last char reached
+			while(index.get(current).intValue()==charset.length-1){	//again, if last char reached at current position
+				index.set(current,0); //sets last char to first char from charset, example: aa(a)
+				current--; //decrement pointer, example: a(a)a
+				
+				if(current==-1){ // last password reached
+					indexSize++;
 					
-					
-					if(currenti==-1)
+					if(indexSize>max){ //no more passwords
+						lastReached = true;
 						break;
-	
-				}
-				if(currenti==-1)
-					break;
-				z.set(currenti,z.get(currenti)+1);
-				currenti=z.size()-1;
-			}else{
-				z.set(currenti, z.get(currenti)+1);
+					}
 
+					//recreate the index
+					index.clear();
+					for(int i = 0; i < indexSize; i++) index.add(0);
+					break;
+				}
 			}
 
-		}
+			if(current!=-1){ //example: not ()ddd
+				index.set(current,index.get(current)+1); //increment current, example: a(b)a 
+				current = index.size()-1; //reset pointer to rightmost position, example: ab(a)
+			}
+			if(current==-1) //example: ()ddd
+				current = index.size()-1; //reset pointer to rightmost position, example: ab(a)
+			
+		}else index.set(current, index.get(current)+1); //increment rightmost char, example: aa(b)
 
-		
+		return s;
 	}
-
 }

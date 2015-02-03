@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <project
-	name="bruteforce"
+	name="Bruteforce"
 	basedir="."
 	xmlns:ivy="antlib:org.apache.ivy.ant"
 	default="build"
@@ -89,7 +89,7 @@
 	>
 		
 		<java
-			classname="bruteforce"
+			classname="Bruteforce"
 			fork="yes"
 			classpathref="project.classpath"
 		/>
@@ -106,7 +106,7 @@
 			printsummary="yes"
 		>
 			<classpath refid="project.classpath"/>
-			<test name="test.bruteforceTest"/>
+			<test name="test.BruteforceTest"/>
 			<formatter type="xml" />
 		</junit>
 	
@@ -119,7 +119,7 @@
 		depends="compile"
 	>
 		<jar
-			destfile="bruteforce.jar"
+			destfile="Bruteforce.jar"
 			basedir="bin"
 			excludes="**/test/**/*.class"
 		/>

@@ -1,3 +1,4 @@
+package bruteforce;
 /**
  * This class will test passwords against encrypted zip files.
  * @author Daniel

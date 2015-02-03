@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,7 +20,7 @@ import java.util.Date;
  * 
  * 
  */
-public class bruteforce {
+public class Bruteforce {
 	static Process pr;
 	static Runtime run;
 	static char [] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
@@ -32,10 +33,6 @@ public class bruteforce {
 			+ "\noptions:\n-gen\t\tgenerate passwords\n-bf\t\tbrute force attack a file\n-entropy\tcalculate entropy";
 	public static void main(String[] args) throws IOException, InterruptedException{
 		
-		
-
-		
-		
 		/* Below is a list of commands to run to extract and verify zip files with unzip (on Unix) and 7zip (on Unix and Windows)
 		 * to extract 1.zip with pass qwerty2 with 7zip:	"7za x " + "1.zip" + " -pqwerty2 -y", x extract, -p password(no space), -y yes to all prompts
 		 * to extract 1.zip with pass qwerty2 with unzip:	"unzip -oP qwerty2 1.zip", o forces overwrite, P password
@@ -44,6 +41,9 @@ public class bruteforce {
 		 * For testing passwords will only need to verify and not extract.
 		 * to verify 1.zip with pass qwerty2 with 7zip:		"7za t 1.zip -pqwerty2"
 		 * to verify 1.zip with pass qwerty2 with unzip:	"unzip -tq -P qwerty2 1.zip"
+		 * 
+		 * linux/mac - command = "unzip -tq -P PASSWORD filename";
+		 * windows (7zip) - command = "7za t " + filename + " -pPASSWORD";
 		 */
 		
 		
@@ -58,19 +58,27 @@ public class bruteforce {
 			/*
 			 * 0 - option, 1 - zipfile, 2 - min pass length, 3 - max pass length
 			 */
+			
 			switch(args[0]){
 			case "-gen":	//execute gen method ;
 							break;
-			case "-bf":		if(platform.contains("linux") || platform.contains("mac")){
-								command = "unzip -tq -P ";
-								//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
-								printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
+			case "-bf":		
 								
-							}else if(platform.contains("windows")){
-								command = "7za t " + filename + " -p";
-								//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
-								printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
-							}else System.out.println("Unsupported OS.");
+							PassGen myPassGen = new PassGen(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+							ArchiveTester archiveTester = new ArchiveTester(filename);
+							boolean found = false;
+							String password = "";
+							while((password = myPassGen.nextPassword()) != null){
+								found = archiveTester.testPass(password);
+								if(found){
+									System.out.printf("Password found: %s", password);
+									break;
+								}
+								System.out.println("Password not found");
+							}
+							//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+							//printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
+
 							break;
 			case "-bf--7zip":	command = "7za t " + filename + " -p"; 	//tests the archive without unpacking, a bit faster
 								//command = "7za x " + filename + " -p";	//unpacks the archive, slower 
@@ -80,7 +88,9 @@ public class bruteforce {
 							break;
 			case "-bf--unzip":	command = "unzip -tq -P ";	//force unzip
 							//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
-							printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
+							//printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
+							break;
+			case "-bf--dict": //dictionary attack
 							break;
 			case "-entropy"://execute entropy method;
 							break;
@@ -123,9 +133,6 @@ public class bruteforce {
 	
 	public static void nPr(char [] c, int min, int max) throws IOException, InterruptedException{
 		//TO DO: IMPLEMENT STARTING PASSWORD OPTION AND PLUG INTO THE INDEX ARRAYLIST
-//		int maxlength = 10;
-//		int minLength = 10;
-		
 		
 		for(int i = min; i<=max; i++){
 			//An ArrayList of ints is used to store the int representation of the current permutation
@@ -160,19 +167,6 @@ public class bruteforce {
 		
 		//int a=0;
 		
-		//This is my first trial-and-error attempt for length 4. Kept for sentimental reasons.
-//		for(int l = 0; l<c.length;l++){
-//			for(int k = 0; k<c.length;k++){
-//				for(int j = 0; j<c.length; j++){
-//					for(int i = 0; i<c.length; i++){
-//						
-//						System.out.println(++a+" " + c[l] + c[k] + c[j] + c[i]);
-//					}
-//				
-//				System.out.println();
-//				}
-//			}
-//		}
 		int currenti = z.size()-1;
 
 
@@ -181,37 +175,33 @@ public class bruteforce {
 			s="";
 			total+=1;
 			
-			//System.out.println(++a+" " + z.toString() );
 			for(int a=0; a<z.size();a++){
 
 				s+=c[z.get(a)];
 				//System.out.printf("%s",c[z.get(a)]);	//THIS IS WHERE PASSWORDS GET PRINTED OUT
 			}
-			if(total%100==0){ //show percentage and current password every 100th password			COMMENT OUT THE IF STATEMENT TO PRINT OUT EVERY SINGLE PASSWORD
+			if(total%100==0){ 
 				System.out.printf("%.2f%% %s \n",(total/perm)*100.0,s);		
 			}
 			
-		/********************************************************************************************/
 			if(platform.contains("linux") || platform.contains("mac")){
-				pr = run.exec(command+s + " " + filename);		//THIS IS WHERE PASSWORDS ARE TRIED OUT			//COMMEND OUT THIS BLOCK TO GENERATE PASSWORDS
+				pr = run.exec(command+s + " " + filename);
 			}else if(platform.contains("windows")){
 				pr = run.exec(command+s + " -y");
 			}
-																									//WITHOUT TRYING THEM OUT.
-			pr.waitFor();																			//TRYING OUT EVERY PASSWORD IS MUCH MUCH SLOWER THAN
-			BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));	//SIMPLY GENERATING THEM.
-																									//MAYBE WRITE THIS BIT IN A SEPARATE THREAD?
-																									//
-			while(( line = buf.readLine()) != null ) 												//
-			{																						//
-			  //System.out.println(line);															//
-			  if(line.contains("Everything is Ok") || line.contains("No errors detected")){			//
-				  System.out.println("SUCCESS!!!");													//
-				  System.out.println(s);															//
-				  System.exit(0);																	//
-			  }																						//
-			}																						//
-		/********************************************************************************************/
+			pr.waitFor();																			
+			BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));	
+																									
+			while(( line = buf.readLine()) != null ) 												
+			{																						
+			  //System.out.println(line);															
+			  if(line.contains("Everything is Ok") || line.contains("No errors detected")){			
+				  System.out.println("SUCCESS!!!");													
+				  System.out.println(s);															
+				  System.exit(0);																	
+			  }																						
+			}																						
+
 
 			
 			//if last char reached max, reset it to start, iteratively check if prev char can be incremented,

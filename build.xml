@@ -106,7 +106,7 @@
 			printsummary="yes"
 		>
 			<classpath refid="project.classpath"/>
-			<test name="bruteforce.test"/>
+			<test name="bruteforce.test.GeneratorTest"/>
 			<formatter type="xml" />
 		</junit>
 	

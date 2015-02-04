@@ -4,7 +4,7 @@ package bruteforce;
  * @author Daniel
  *
  */
-public class ArchiveTester {
+public class ArchiveTester implements Tester<Object>{
 	
 	public ArchiveTester(String filename) {
 		
@@ -15,8 +15,8 @@ public class ArchiveTester {
 	 * @param password
 	 * @return
 	 */
-	public boolean testPass(String password){
-		System.out.println(password);
+	public boolean testPass(Object password){
+		System.out.println((String)password); //for now
 		return false;
 	}
 

@@ -49,11 +49,11 @@ public class Bruteforce {
 			case "-gen":	//execute gen method ;
 							break;
 			case "-bf":		
-							PassGen myPassGen = new PassGen(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+							Generator myPassGen = new PermuteRepeat(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
 							ArchiveTester archiveTester = new ArchiveTester(filename);
 							boolean found = false;
 							String password = "";
-							while((password = myPassGen.nextPassword()) != null){
+							while((password = myPassGen.getNextPassword()) != null){
 								found = archiveTester.testPass(password);
 								if(found){
 									System.out.printf("Password found: %s", password);
@@ -61,9 +61,7 @@ public class Bruteforce {
 								}
 								
 							}
-							System.out.println("Password not found");
-							//nPr(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
-							//printAll(letters, Integer.parseInt(args[2]),Integer.parseInt(args[3]), start);
+							if(!found) System.out.println("Password not found");
 
 							break;
 			case "-bf--7zip":	command = "7za t " + filename + " -p"; 	//tests the archive without unpacking, a bit faster

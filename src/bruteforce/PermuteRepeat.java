@@ -8,6 +8,7 @@ import java.util.ArrayList;
  */
 public class PermuteRepeat implements Generator {
 	char[] charset;
+	int[] lengths; // for lengths 3,5,7 will generate only those lengths
 	int min, max, indexSize, current;
 	ArrayList<Integer> index;
 	boolean lastReached;
@@ -29,7 +30,7 @@ public class PermuteRepeat implements Generator {
 		
 	}
 	
-	public void zeroInitializeIndex(){
+	private void zeroInitializeIndex(){
 		index.clear();
 		for(int i = 0; i < indexSize; i++) index.add(0);
 	}
@@ -59,7 +60,7 @@ public class PermuteRepeat implements Generator {
 				index.set(current,0); //sets last char to first char from charset, example: aa(a)
 				current--; //decrement pointer, example: a(a)a
 				
-				if(current==-1){ // last password reached
+				if(current==-1){ // last password reached, example: ()ddd
 					indexSize++;
 					
 					if(indexSize>max){ //max length exceeded, no more passwords

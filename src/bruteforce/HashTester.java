@@ -1,10 +1,14 @@
 package bruteforce;
 
 public class HashTester<T> implements Tester<Object>{
+	
 
 
 	@Override
-	public boolean testPass(Object target) {
+	/**
+	 * @param target contains 
+	 */
+	public boolean testPass(Object password) {
 		// TODO Auto-generated method stub
 		return false;
 	}

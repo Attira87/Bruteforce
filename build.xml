@@ -107,6 +107,7 @@
 		>
 			<classpath refid="project.classpath"/>
 			<test name="bruteforce.test.GeneratorTest"/>
+			<test name="bruteforce.test.TesterTest"/>
 			<formatter type="xml" />
 		</junit>
 	

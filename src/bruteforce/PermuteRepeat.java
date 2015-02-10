@@ -13,7 +13,11 @@ public class PermuteRepeat implements Generator {
 	ArrayList<Integer> index;
 	boolean lastReached;
 	
+	/*
+	 * TODO: rewrite constructors in a cascading fashion, set starting point, set lengths array
+	 */
 	public PermuteRepeat(char[] c, int min, int max){
+		this(c, min, max, null);
 		this.charset = c;
 		this.min = min;
 		this.indexSize = min;
@@ -27,8 +31,32 @@ public class PermuteRepeat implements Generator {
 	}
 	
 	public PermuteRepeat(char [] c, int min, int max, String start){
+		this(new String(c), min, max, start);
 		
 	}
+	
+
+	public PermuteRepeat(String c, int min, int max, String start){
+		ArrayList<Integer> length = new ArrayList<Integer>();
+		for(int i = min; i <= max; i++){
+			length.add(i);
+		}
+		//FIX this soon
+		//this(c, (char[])length.toArray(), start);
+
+	}
+	public PermuteRepeat(String c, int [] length, String start){
+		if(start == null) {
+			zeroInitializeIndex();
+		}else{
+			for(char a: start.toCharArray()){
+				index.add(c.indexOf(a));
+			}
+		}
+		this.lengths = length;
+		
+	}
+	
 	
 	private void zeroInitializeIndex(){
 		index.clear();
@@ -102,5 +130,9 @@ public class PermuteRepeat implements Generator {
 	@Override
 	public Boolean hasNext() {
 		return !lastReached;
+	}
+	
+	private void setStart(double n){
+		
 	}
 }

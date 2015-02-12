@@ -6,17 +6,16 @@ import java.util.HashMap;
 
 
 public class Bruteforce {
-	static Process pr;
-	static Runtime run;
-	static char [] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-	static char [] numbers = "0123456789".toCharArray();
-	static char [] testChar = "qwerty".toCharArray();
-	static char [] letters = "abcd".toCharArray();
-	static char [] testnum = "123".toCharArray();
-	static String command, filename, platform, line, start;
-	static String usageString = "Usage: bruteforce [-options] [arguments]"
-			+ "\noptions:\n-gen\t\tgenerate passwords\n-bf\t\tbrute force attack a file\n-entropy\tcalculate entropy\n";
-	public static void main(String[] args) throws IOException, InterruptedException{
+
+	//static String command, filename, platform, line, start;
+	static String usageString = "Usage: bruteforce [-options] [arguments]" +
+	"\noptions:\n" +
+	"-i\t\tinteractive mode\n-bf\t\tcrack a password with bruteforce\n" +
+	"-gen\t\tgenerate passwords\n" +
+	"-en\t\tcalculate entropy\n" +
+	"-scp\t\tscrape source to a dictionary\n\n";
+	
+	public static void main(String ... args) throws IOException, InterruptedException{
 		/*
 		 * The arguments hashmap stores the args either from the command line args or interactive mode args.
 		 * It streamlines the execution of the program for either mode.
@@ -241,20 +240,20 @@ public class Bruteforce {
 	}
 	
 	public static void printAll(char[] c, int n, String start) throws IOException{
-		  if(start.length() >= n){
-			  System.out.println(start);
-			  if(platform.contains("linux") || platform.contains("mac")){
-				  //pr = run.exec(command+start + " " + filename);
-			  }
-			  else if(platform.contains("windows")){
-					  pr = run.exec(command+start + " -y");
-			  }
-				
-		  }else{
-		    for(char x: c){ 
-		      printAll(c, n, start+x);
-		    }
-		  }
+//		  if(start.length() >= n){
+//			  System.out.println(start);
+//			  if(platform.contains("linux") || platform.contains("mac")){
+//				  //pr = run.exec(command+start + " " + filename);
+//			  }
+//			  else if(platform.contains("windows")){
+//					  //pr = run.exec(command+start + " -y");
+//			  }
+//				
+//		  }else{
+//		    for(char x: c){ 
+//		      printAll(c, n, start+x);
+//		    }
+//		  }
 		}
 	
 	
@@ -264,23 +263,22 @@ public class Bruteforce {
 	}
 
 	private static void permutation(String prefix, String str) throws IOException {
-	    int n = str.length();
-	   // if (n == 0) System.out.println(command + prefix + " " + "file.zip");
-	    if(n==0){
-	    	pr = run.exec(command + prefix + " " + "file.zip");
-			BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-
-			
-			while(( line = buf.readLine()) != null ) 
-			{
-			  //System.out.println(line);
-			  if(line.contains("No errors detected")) {System.out.println("SUCCESS!!!");}
-			}
-	    	}
-	    else {
-	        for (int i = 0; i < n; i++)
-	            permutation(prefix + str.charAt(i), str.substring(0, i) + str.substring(i+1, n));
-	    }
+//	    int n = str.length();
+//	    if(n==0){
+//	    	//pr = run.exec(command + prefix + " " + "file.zip");
+//			//BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+//
+//			
+//			while(( line = buf.readLine()) != null ) 
+//			{
+//			  //System.out.println(line);
+//			  if(line.contains("No errors detected")) {System.out.println("SUCCESS!!!");}
+//			}
+//	    	}
+//	    else {
+//	        for (int i = 0; i < n; i++)
+//	            permutation(prefix + str.charAt(i), str.substring(0, i) + str.substring(i+1, n));
+//	    }
 	}
 	
 	

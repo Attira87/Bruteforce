@@ -1,22 +1,26 @@
 package bruteforce;
 
-public class Cracker<T> {
-	private String input;
-	private Object target;
-	
-	/**
-	 * 
-	 * @param input target string pattern
-	 * @param target eg zip
-	 */
-	//depending on input will decide whether to instantiate PermuteRepeat or Permute or dictionary
-	public <T> Cracker(String input, Object target){
-		this.input = input;		
-		this.target = target;
+
+public class Cracker{
+	String pattern;
+	//Pattern pattern;
+	String dictType;
+	String dictPath;
+	Generator [] generator;
+
+	public Cracker(String pattern, String dictType, String dictPath){
+		//this.pattern = new Pattern(pattern);
+		this.pattern = pattern;
+		this.dictType = dictType;
+		this.dictPath = dictPath;
 		
+	}
+	
+	private void parsePattern(){
+		for(char c: pattern.toCharArray()){
+			
+		}
 	}
 
-	public void crack(){
-		
-	}
+	
 }

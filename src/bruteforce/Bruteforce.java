@@ -1,8 +1,8 @@
 package bruteforce;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
+
+import net.lingala.zip4j.exception.ZipException;
 
 
 public class Bruteforce {
@@ -15,7 +15,7 @@ public class Bruteforce {
 	"-en\t\tcalculate entropy\n" +
 	"-scp\t\tscrape source to a dictionary\n\n";
 	
-	public static void main(String ... args) throws IOException, InterruptedException{
+	public static void main(String ... args) throws IOException, InterruptedException, ZipException{
 		/*
 		 * The arguments hashmap stores the args either from the command line args or interactive mode args.
 		 * It streamlines the execution of the program for either mode.
@@ -26,6 +26,7 @@ public class Bruteforce {
 		arguments.put("filename", null);
 		arguments.put("pattern", null);
 		arguments.put("hash", null);
+		arguments.put("hashtype", null);
 		arguments.put("cmd", null);
 		arguments.put("entropy", null);
 		arguments.put("dicttype", null);
@@ -93,8 +94,36 @@ public class Bruteforce {
 								arguments.put("dictpath",cin);
 
 								break;
-							case "-hash": break;
-							case "-cmd": break;
+							case "-hash":
+								System.out.printf("Enter hash:\n");
+								cin = in.read();
+								arguments.put("hash", cin);
+								
+								System.out.printf("Enter hash type:\n");
+								cin = in.read();
+								arguments.put("hashtype", cin);
+								
+								System.out.printf("Enter pattern:\n");
+								cin = in.read();
+								arguments.put("pattern", cin);
+								break;
+							case "-cmd": 
+								System.out.printf("Enter command line to execute, use $ as a placeholder for password:\n");
+								cin = in.read();
+								arguments.put("cmd", cin);
+								
+								System.out.printf("Enter pattern:\n");
+								cin = in.read();
+								arguments.put("pattern", cin);
+								
+								
+								System.out.printf("\n(Optional) Enter dictionary type or leave blank:\n-word\t\talready generated wordlist\n-raw\t\traw source file\n");
+								cin = in.read();
+								arguments.put("dicttype",cin);
+								System.out.printf("\n(Optional) Enter dictionary path or leave blank:\n");
+								cin = in.read();
+								arguments.put("dictpath",cin);
+								break;
 							
 							}
 							break;
@@ -122,7 +151,34 @@ public class Bruteforce {
 								break;
 							}
 							break;
-						case "-en": break;
+						case "-en":
+							System.out.printf("Enter entropy generation method:\n\n-pass\tuser entered password\n-pat\tpattern\n\n");
+							cin = in.read();
+							arguments.put("mode2", cin);
+							
+							switch(cin){
+							case "-pass":
+								System.out.printf("\nEnter password:\n");
+								cin = in.read();
+								arguments.put("password", cin);
+								break;
+							case "-pat":
+								System.out.printf("\nEnter pattern:\n");
+								cin = in.read();
+								arguments.put("pattern", cin);
+								break;
+							
+							}
+							break;
+						case "-scp":
+							System.out.printf("\nEnter dictionary type:\n-word\t\talready generated wordlist\n-raw\t\traw source file\n");
+							cin = in.read();
+							arguments.put("dicttype", cin);
+
+							System.out.printf("\nEnter dictionary path:\n");
+							cin = in.read();
+							arguments.put("dictpath", cin);
+							break;
 						default: System.out.println("Invalid option.");break;
 						}
 						
@@ -167,14 +223,15 @@ public class Bruteforce {
 				break;
 			case "-hash":
 				arguments.put("hash", args[2]);
-				arguments.put("pattern", args[3]);
-				if(args.length == 5){
+				arguments.put("hashtype", args[3]);
+				arguments.put("pattern", args[4]);
+				if(args.length == 6){
 					System.out.println("Invalid parameters.");
 					System.exit(1);
 				}
-				if(args.length == 6){
-					arguments.put("dicttype",args[4]);
-					arguments.put("dictpath",args[5]);
+				if(args.length == 7){
+					arguments.put("dicttype",args[5]);
+					arguments.put("dictpath",args[6]);
 				}
 				break;
 			case "-cmd":
@@ -191,26 +248,22 @@ public class Bruteforce {
 				}
 				break;
 			}
-			
-//			Generator myPassGen = new PermuteRepeat(letters,Integer.parseInt(args[2]),Integer.parseInt(args[3]));
-//			ArchiveTester archiveTester = new ArchiveTester(filename);
-//			boolean found = false;
-//			String password = "";
-//			while((password = myPassGen.getNextPassword()) != null){
-//				found = archiveTester.testPass(password);
-//				if(found){
-//					System.out.printf("Password found: %s", password);
-//					break;
-//				}
-//				
-//			}
-//			if(!found) System.out.println("Password not found");
 
 			break;
 
 		case "-en":
 			arguments.put("mode1", args[0]);
-			arguments.put("password", args[1]);
+			
+			switch(args[1]){
+			case "-pass":
+				arguments.put("mode2", args[1]);
+				arguments.put("password", args[2]);
+				break;
+			case "-pat":
+				arguments.put("mode2", args[1]);
+				arguments.put("pattern", args[2]);
+				break;
+			}
 			break;
 		case "-scp":
 			arguments.put("mode1", args[0]);
@@ -221,64 +274,30 @@ public class Bruteforce {
 			break;
 		}
 		
+		//TODO: Check that all the arguments are collected, esp. dictionary; add starting password option, add thread number option
+		
+		switch(arguments.get("mode1")){
+			case "-bf": 
+				switch(arguments.get("mode2")){
+				case "-zip": {
+					ZipCracker cracker = new ZipCracker(arguments.get("filename"), arguments.get("pattern"), arguments.get("dicttype"), arguments.get("dictpath"));
+					break;}
+				case "-hash":{ 
+					HashCracker cracker = new HashCracker(arguments.get("hash"),arguments.get("hashtype"), arguments.get("pattern"), arguments.get("dicttype"), arguments.get("dictpath"));
+					break;}
+				case "-cmd":{
+					CmdCracker cracker = new CmdCracker(arguments.get("cmd"), arguments.get("pattern"), arguments.get("dicttype"), arguments.get("dictpath"));
+					break;}
+				}
+				break;
+			case "-gen": break;
+			case "-en": break;
+			case "-scp": break;
+			
+		}
+		
 		System.out.printf("%s",arguments.toString());
 
-		
-	}
-
-	//From http://stackoverflow.com/questions/13157656/permutation-of-an-array-with-repetition-in-java
-	//Most likely won't use
-	public static void printAll(char[] c, int min, int max, String start) throws IOException{
-		
-		int loop; //stores the starting size of password
-		if(start=="") loop = min;
-		else loop = start.length();
-			
-		for(int i = loop; i<=max; ++i){
-			printAll(c, i, start);
-		}
-	}
-	
-	public static void printAll(char[] c, int n, String start) throws IOException{
-//		  if(start.length() >= n){
-//			  System.out.println(start);
-//			  if(platform.contains("linux") || platform.contains("mac")){
-//				  //pr = run.exec(command+start + " " + filename);
-//			  }
-//			  else if(platform.contains("windows")){
-//					  //pr = run.exec(command+start + " -y");
-//			  }
-//				
-//		  }else{
-//		    for(char x: c){ 
-//		      printAll(c, n, start+x);
-//		    }
-//		  }
-		}
-	
-	
-	//not using these at the moment, may use in the future for non repeated characters 
-	public static void permutation(String str) throws IOException { 
-	    permutation("", str); 
-	}
-
-	private static void permutation(String prefix, String str) throws IOException {
-//	    int n = str.length();
-//	    if(n==0){
-//	    	//pr = run.exec(command + prefix + " " + "file.zip");
-//			//BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-//
-//			
-//			while(( line = buf.readLine()) != null ) 
-//			{
-//			  //System.out.println(line);
-//			  if(line.contains("No errors detected")) {System.out.println("SUCCESS!!!");}
-//			}
-//	    	}
-//	    else {
-//	        for (int i = 0; i < n; i++)
-//	            permutation(prefix + str.charAt(i), str.substring(0, i) + str.substring(i+1, n));
-//	    }
 	}
 	
 	

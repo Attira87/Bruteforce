@@ -2,120 +2,141 @@ package bruteforce.test;
 
 import static org.junit.Assert.*;
 
+import java.math.BigInteger;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import bruteforce.CharacterSets;
 import bruteforce.CharsetNullException;
 import bruteforce.Generator;
+import bruteforce.IntegerStartGreaterThanNoOfPermutationsException;
 import bruteforce.InvalidStartingStringLengthException;
+import bruteforce.Permute;
 import bruteforce.PermuteRepeat;
-import bruteforce.StartingStringCharactersNotPresentInCharsetException;
+import bruteforce.RandomPassword;
+import bruteforce.SequenceOccurrenceMismatchException;
+import bruteforce.StartingSequenceNotPresentInCharsetException;
 import bruteforce.ZeroLengthException;
 
 public class GeneratorTest {
 
-	Generator lowerCase, upperCase,digits,
-	specialChars,customCharset,start,sequence,
-	sequenceAndLowerCase, emptyCharset, nullCharset,
-	invalidLength, from5to1, intArray, startSequence;
+	Generator permuteRepeat;
+	Generator permute;
+	Generator randomGenerator;
+
+//	@Test
+//	public void randomPasswordGeneratorTest() throws CharsetNullException{
+//		randomGenerator = new RandomPassword(CharacterSets.lowerCase + CharacterSets.upperCase + CharacterSets.special + CharacterSets.digits, 10);
+//		System.out.println(randomGenerator.getNextPassword());
+//	}
 	
-	@Before
-	public void setUp() throws Exception {
-		lowerCase = new PermuteRepeat(CharacterSets.lowerCase, null, 2, 4);
-		upperCase = new PermuteRepeat(CharacterSets.upperCase, null, 3, 3);
-		digits = new PermuteRepeat(CharacterSets.digits, null, 3, 4);
-		specialChars = new PermuteRepeat(CharacterSets.special, null, 4, 4);
-		customCharset = new PermuteRepeat("abcdef23456", null, 5, 5);
-		start = new PermuteRepeat(CharacterSets.lowerCase, "start", 5, 5);
-		sequence = new PermuteRepeat("[squirrel][cat][dog][awesome][love][10-02-2015]", null, 1, 4);
-		sequenceAndLowerCase = new PermuteRepeat("[Jim][Andrew][Alfred]abcd", null, 4,5); // do this
-		from5to1 = new PermuteRepeat("abcde", "eeeee", 5, 1);
-		intArray = new PermuteRepeat("abcde", null, 1, 3, 5);
-		startSequence = new PermuteRepeat("[spoon][fork][knife][chopsticks]", "[knife][chopsticks][fork]", 1, 3, 5);
-	}
-
+//	@Test
+//	public void setRandomStartTest() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, IntegerStartGreaterThanNoOfPermutationsException{
+//		permuteRepeat = new PermuteRepeat(CharacterSets.lowerCase, BigInteger.valueOf(-1), 10);
+//		System.out.println(permuteRepeat.getNextPassword());
+//
+//	}
+	
 	@Test
-	public void lowerCase2_4Test() {
+	public void setIntTest() throws CharsetNullException, IntegerStartGreaterThanNoOfPermutationsException{
+		PermuteRepeat setInteger = new PermuteRepeat("abcdefghijklmnopqwer", BigInteger.valueOf(3199999), 5);
+		String password = "";
+		String expected = "rrrrr";
+		while((password = setInteger.getNextPassword()) != null){
+			//System.out.println(password);
+			if(password.equals(expected)) break;
+			
+		}
+		assertEquals(expected, password);
+	}
+	
+	@Test
+	public void permSetStartTest() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, SequenceOccurrenceMismatchException, IntegerStartGreaterThanNoOfPermutationsException{
+		permute = new Permute("abcdefg", 5039);
+		String expected = "gfedcba";
 		String password;
-		String expected = "jhf";
+		password = permute.getNextPassword();
+		assertEquals(expected,password);
 
-		while((password = lowerCase.getNextPassword()) != null){
+	}
+	
+	
+	public void runPermute(String expected){
+		String password;
+		while((password = permute.getNextPassword()) != null){
+			//System.out.println(password);
 			if(password.equals(expected)) break;
 		}
 		assertEquals(expected, password);
 	}
-	@Test
-	public void upperCase3_3Test(){
+	
+	public void runPermRepeat(String expected){
 		String password;
+		while((password = permuteRepeat.getNextPassword()) != null){
+			//System.out.println(password);
+			if(password.equals(expected)) break;
+		}
+		assertEquals(expected, password);
+	}
+	
+	@Test
+	public void lowerCase2_4Test() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException {
+		permuteRepeat = new PermuteRepeat(CharacterSets.lowerCase, null, 2, 4);
+		String expected = "jhf";
+		runPermRepeat(expected);
+	}
+	@Test
+	public void upperCase3_3Test() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException{
+		permuteRepeat = new PermuteRepeat(CharacterSets.upperCase, null, 3, 3);
+		
 		String expected = "TFH";
 
-		while((password = upperCase.getNextPassword()) != null){
-			if(password.equals(expected)) break;
-		}
-		assertEquals(expected, password);		
+		runPermRepeat(expected);	
 	}
 	@Test
-	public void digits3_4Test(){
-		String password;
+	public void digits3_4Test() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException{
+		permuteRepeat = new PermuteRepeat(CharacterSets.digits, null, 3, 4);
 		String expected = "1385";
-
-		while((password = digits.getNextPassword()) != null){
-			if(password.equals(expected)) break;
-		}
-		assertEquals(expected, password);	
+		runPermRepeat(expected);
 	}
 	
 	@Test
-	public void specialCharsTest(){
-		String password;
+	public void specialCharsTest() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException{
+		permuteRepeat = new PermuteRepeat(CharacterSets.special, null, 4, 4);
 		String expected = "$%(@";
-
-		while((password = specialChars.getNextPassword()) != null){
-			if(password.equals(expected)) break;
-		}
-		assertEquals(expected, password);	
+		runPermRepeat(expected);
 	}
 	
 	@Test
-	public void customCharsetTest(){
-		String password;
+	public void customCharsetTest() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException{
+		permuteRepeat = new PermuteRepeat("abcdef23456", null, 5, 5);
 		String expected = "dcb54";
-
-		while((password = customCharset.getNextPassword()) != null){
-			if(password.equals(expected)) break;
-		}
-		assertEquals(expected, password);	
+		runPermRepeat(expected);	
 	}
 	
 	@Test
-	public void startTest(){
-		String password;
+	public void startTest() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException{
+		permuteRepeat = new PermuteRepeat(CharacterSets.lowerCase, "start", 5, 5);
 		String expected = "start";
-
-		password = start.getNextPassword();
-		
-		assertEquals(expected, password);	
+		runPermRepeat(expected);	
 	}
 	
 	@Test
-	public void sequenceTest(){
-		String password;
+	public void sequenceTest() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException{
+		permuteRepeat = new PermuteRepeat("[squirrel][cat][dog][awesome][love][10-02-2015]", null, 1, 4);
 		String expected = "awesomecatdog10-02-2015";
+		runPermRepeat(expected);
+	}
+	@Test
+	public void emptyCharsetTest() throws InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException, CharsetNullException{
 
-		while((password = sequence.getNextPassword()) != null){
-			if(password.equals(expected)) break;
-		}
-		assertEquals(expected, password);	
-	}
-	@Test
-	public void emptyCharsetTest() throws InvalidStartingStringLengthException, StartingStringCharactersNotPresentInCharsetException, ZeroLengthException{
 		String actual;
 		String expected = "bruteforce.CharsetNullException: Charset is empty";
 		
 		try{
-			 emptyCharset = new PermuteRepeat("", null, 1, 1);
-			 actual = "exception not thrown";
+			permuteRepeat = new PermuteRepeat("", null, 1, 1);
+			actual = "exception not thrown";
 		}catch(CharsetNullException e){
 			actual = e.toString();
 		}
@@ -123,13 +144,13 @@ public class GeneratorTest {
 	}
 	
 	@Test
-	public void nullCharsetTest() throws InvalidStartingStringLengthException, StartingStringCharactersNotPresentInCharsetException, ZeroLengthException{
+	public void nullCharsetTest() throws InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException{
 		String actual;
 		String expected = "bruteforce.CharsetNullException: Charset is empty";
 		
 		try{
-			 nullCharset = new PermuteRepeat(null, null, 1, 1);
-			 actual = "exception not thrown";
+			permuteRepeat = new PermuteRepeat(null, null, 1, 1);
+			actual = "exception not thrown";
 		}catch(CharsetNullException e){
 			actual = e.toString();
 		}
@@ -137,54 +158,65 @@ public class GeneratorTest {
 	}
 	
 	@Test
-	public void from5to1Test(){
+	public void from5to1Test() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException{
+		permuteRepeat = new PermuteRepeat("abcde", "eeeee", 5, 1);
 		String password;
 		String expected = "aaaa";
 
-		from5to1.nextPassword();
-		password = from5to1.getNextPassword();
+		permuteRepeat.nextPassword();
+		password = permuteRepeat.getNextPassword();
 		assertEquals(expected, password);	
 	}
 	@SuppressWarnings("deprecation")
 	@Test
-	public void intArrayTest(){
+	public void intArrayTest() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException{
+		permuteRepeat = new PermuteRepeat("abcde", null, 1, 3, 5);
 		String password1;
 		String password2;
 		String expected1 = "aaa";
 		String expected2 = "aaaaa";
 
 		for(int i = 0; i<5; i++){
-			intArray.nextPassword();
+			permuteRepeat.nextPassword();
 		}
-		password1 = intArray.getNextPassword(); //aaa
+		password1 = permuteRepeat.getNextPassword(); //aaa
 		
 		for(int i = 0; i<124; i++){
-			intArray.nextPassword();
+			permuteRepeat.nextPassword();
 		}
-		password2 = intArray.getNextPassword(); //aaaaa
+		password2 = permuteRepeat.getNextPassword(); //aaaaa
 	
 		assertEquals(new String[]{expected1, expected2}, new String[]{password1,password2});
 
 	}
 	
+	@Test
+	public void twoLengthsTest() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException{
+		//check that length changes from 3 to 5 and doesn't go to 4
+		int [] lengths = {3,5};
+		permuteRepeat = new PermuteRepeat("abcdefg", "ggg", lengths);
+		String expected = "aaaaa";
+		String password = permuteRepeat.getNextPassword();
+		password = permuteRepeat.getNextPassword();
+		
+		assertEquals(expected, password);
+	}
+	
 	
 	@Test
-	public void sequenceAndLowerCase(){
-		String password;
+	public void sequenceAndLowerCase() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException, IntegerStartGreaterThanNoOfPermutationsException{
+		permuteRepeat = new PermuteRepeat("[Jim][Andrew][Alfred]abcd", (String)null, 5);
 		String expected = "JimdAlfredAndrewc";
-
-		while((password = sequenceAndLowerCase.getNextPassword()) != null){
-			if(password.equals(expected)) break;
-		}
-		assertEquals(expected, password);	
+		runPermRepeat(expected);
 	}
 	
 	@Test
-	public void startSequenceTest(){
+	public void startSequenceTest() throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException{
+		permuteRepeat = new PermuteRepeat("[spoon][fork][knife][chopsticks]", "[knife][chopsticks][fork]", 1, 3, 5);
 		String password;
 		String expected = "knifechopsticksfork";
 
-		password = startSequence.getNextPassword();
+		password = permuteRepeat.getNextPassword();
 		
 		assertEquals(expected, password);
 	}

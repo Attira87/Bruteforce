@@ -1,40 +1,53 @@
 package bruteforce;
-
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Stack;
 
 
-public class PermuteRepeat implements Generator {
-	ArrayList<String> charset;		//stores characters or character sequences
-	int[] lengths;					//lengths of passwords to generate
-	Integer currentLength;			//stores the index in lengths[] of current length
-	int pointer; 					//index in index ArrayList of current character or character sequence to increment
-	ArrayList<Integer> index;		//stores the indices of characters or character sequences in elements
-	boolean lastReached;
+public class PermuteRepeat extends PermutationAlgorithm implements Generator {
+	int pointer; 	//index in index ArrayList of current character or character sequence to increment
 
-
+	public PermuteRepeat(String charset, BigInteger start, int length) throws CharsetNullException, IntegerStartGreaterThanNoOfPermutationsException{ // set starting point with an integer, 0 < start < charset.length ^ length
+		this(stringToCharArrayList(charset), start, length);
+	}
+	public PermuteRepeat(ArrayList<String> charset, BigInteger start, int length) throws CharsetNullException, IntegerStartGreaterThanNoOfPermutationsException{
+		super(charset,length);
+		currentLength = 0;
+		index = new ArrayList<Integer>(this.lengths[currentLength]);
+//		if(start == null){
+//			
+//		}
+		if(start.equals(BigInteger.valueOf(-1))){
+			//System.out.println(start);
+			setRandomStart();
+		}else{
+			setStart(start);
+		}
+		
+		this.pointer = index.size() - 1;
+	}
+	
+	//TODO: String stop parameter that indicates where to stop
 	public PermuteRepeat(String charset, String start,  int from, int to)
-			throws CharsetNullException, InvalidStartingStringLengthException, StartingStringCharactersNotPresentInCharsetException, ZeroLengthException {
+			throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException, ZeroLengthException {
 		this(stringToCharArrayList(charset), stringToCharArrayList(start), fromTo(from, to));
 	}
 
 	public PermuteRepeat(String charset, String start, int ... lengths)
-			throws CharsetNullException, InvalidStartingStringLengthException, StartingStringCharactersNotPresentInCharsetException {
+			throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException {
 		this(stringToCharArrayList(charset), stringToCharArrayList(start), lengths);
 	}
 
 	public PermuteRepeat(ArrayList<String> charset, ArrayList<String> start, int ... lengths)
-			throws CharsetNullException, InvalidStartingStringLengthException, StartingStringCharactersNotPresentInCharsetException {
-		if(charset == null) throw new CharsetNullException("Charset is empty");
+			throws CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException {
+		super(charset, lengths);
 		this.lengths = lengths;
-		this.charset = charset;
-		this.lastReached = false;
 		
 		if (start == null){
 			currentLength = 0;
-			index = new ArrayList<Integer>(lengths[currentLength]);
-			zeroInitializeIndex();
+			index = new ArrayList<Integer>(this.lengths[currentLength]);
+			initializeIndex();
 		}else{
-			index = new ArrayList<Integer>();
 			setStart(start);
 		}
 		this.pointer = index.size() - 1;
@@ -62,70 +75,58 @@ public class PermuteRepeat implements Generator {
 		}
 		return lengths;
 	}
-
-	private String numToStart(double n) { // TODO: turn a random number between 0 and 1 into starting password;
-		return null;
-	}
-
-	/**
-	 * Turns a String into an ArrayList of single character Strings or sequences
-	 * of strings
-	 * 
-	 * @param s
-	 * @return ArrayList of Strings of single characters
-	 */
-	private static ArrayList<String> stringToCharArrayList(String s) {
-		if (s == null || s == "")
-			return null;
-		return stringToCharArrayList(s.toCharArray());
-	}
-
-	/**
-	 * Turns characters or sequences of characters into a starting point
-	 * Sequences must be enclosed in [] brackets
-	 * 
-	 * @param s
-	 * @return
-	 */
-	private static ArrayList<String> stringToCharArrayList(char[] s) {
-		//currently square brackets can't be in charset as they are reserved for sequences.
-		//TODO: implement functionality to include square brackets too, e.g. by doubling them [[ ]]
-		ArrayList<String> charArrayList = new ArrayList<String>(s.length);
-		String temp = "";
-		boolean sequence = false;
-		for (char c : s) {
-			if (c == '[') {
-				sequence = true;
-				continue;
-			} else if (c == ']') {
-				sequence = false;
-				charArrayList.add(temp);
-				temp = "";
-				continue;
-			} else{
-				if(sequence) temp += c;
-				else charArrayList.add(String.valueOf(c));
-			}
 	
+	private void setRandomStart() throws IntegerStartGreaterThanNoOfPermutationsException {
+
+		long r = (long) (Math.random() * (long)Math.pow(charset.size(), lengths[currentLength]));
+		
+		BigInteger random = BigInteger.valueOf(r);
+		//System.out.println(random);
+		setStart(random);
+	}
+	
+	private void setStart(BigInteger start) throws IntegerStartGreaterThanNoOfPermutationsException{ //given a number between 0 and the number of permutations, set starting string
+		//BigInteger pow = new BigInteger((long) Math.pow(charset.size(), lengths[currentLength]));
+		BigInteger pow = BigInteger.valueOf((long) Math.pow(charset.size(), lengths[currentLength]));
+		//System.out.println(pow);
+		if(start.compareTo(pow) >= 0){
+			throw new IntegerStartGreaterThanNoOfPermutationsException("The starting integer is greater than the number of permutations");
 		}
-		return charArrayList;
+		convertBase(start, charset.size());
+	}
+	
+	//base conversion algorithm
+	//http://www.cut-the-knot.org/recurrence/conversion.shtml
+	
+	/** Calculates what indices to put in index ArrayList for a given password number 
+	 * 
+	 * @param start 0 < n < charset.size ^ length
+	 * @param base size of charset
+	 */
+	private void convertBase(BigInteger start, int base){
+		Stack<Integer> stack = new Stack<Integer>();
+		while(start.compareTo(BigInteger.valueOf(base)) >= 0){
+			stack.push((start.mod(BigInteger.valueOf(base)).intValue()));
+			start = start.divide(BigInteger.valueOf(base));
+		}
+
+		int zerosToPrepend = lengths[0] - (stack.size() + 1);
+		for(int i = 0; i < zerosToPrepend; i++) index.add(0);
+		
+		index.add(start.intValue());
+		
+		while(!stack.empty()){
+			index.add(stack.pop());
+		}
 	}
 
-	private void zeroInitializeIndex() {
+
+	private void initializeIndex() {
 		index.clear();
 		for (int i = 0; i < lengths[currentLength]; i++)
 			index.add(0);
 	}
 
-	/**
-	 * returns current password if exists or null and increments
-	 */
-	@Override
-	public String getNextPassword() {
-		String password = getCurrentPassword();
-		nextPassword();
-		return password;
-	}
 
 	/**
 	 * increment to next position
@@ -145,12 +146,12 @@ public class PermuteRepeat implements Generator {
 	
 					  if(!nextLength()){ //max length exceeded, no more passwords
 					   	lastReached = true;
-					   	System.out.println("last reached");
+					   	//System.out.println("last reached");
 					  	break;
 					  }
 	
 					//recreate the index
-					zeroInitializeIndex();
+					initializeIndex();
 					break;
 				}
 			} while(index.get(pointer).intValue()==charset.size()-1);	//again, if last char reached at current position
@@ -165,26 +166,6 @@ public class PermuteRepeat implements Generator {
 		}else index.set(pointer, index.get(pointer)+1); 				//increment rightmost char, example: aa(b)
 	}
 
-	/**
-	 * builds a string representation of current password
-	 */
-	@Override
-	public String getCurrentPassword() {
-		if (lastReached)
-			return null;
-
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < index.size(); i++) {
-			buf.append(charset.get(index.get(i)));
-		}
-		return buf.toString();
-	}
-
-	@Override
-	public Boolean hasNext() {
-		return !lastReached;
-	}
-
 	private boolean nextLength() {
 		if (currentLength == lengths.length - 1) {
 			return false;
@@ -193,29 +174,5 @@ public class PermuteRepeat implements Generator {
 		return true;
 	}
 
-	/**
-	 * sets the index to the starting position
-	 * 
-	 * @param start
-	 *            starting password value, it's length also dictates the length
-	 *            of current password
-	 * @throws InvalidStartingStringLengthException 
-	 * @throws StartingStringCharactersNotPresentInCharsetException 
-	 */
-	private void setStart(ArrayList<String> start) throws InvalidStartingStringLengthException, StartingStringCharactersNotPresentInCharsetException {
-		// set currentLength to the index of start's length
-		for (int i = 0; i < lengths.length; i++) {
-			if (lengths[i] == start.size())
-				currentLength = i;
-		}
-		if (currentLength == null) {			//if the length of starting password doesn't match any of the lengths in lengths array
-			throw new InvalidStartingStringLengthException("Starting password length and given lengths don't match");
-		}
-		for (String s : start) {				//get the index in elements of each element in 'start' ArrayList
-			if(charset.indexOf(s) == -1){
-				throw new StartingStringCharactersNotPresentInCharsetException("Starting password character/sequences not present in character set");
-			}
-			index.add(charset.indexOf(s));
-		}
-	}
+
 }

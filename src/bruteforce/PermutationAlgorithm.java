@@ -2,17 +2,17 @@ package bruteforce;
 
 import java.util.ArrayList;
 
-public abstract class PermutationAlgorithm implements Generator{
-	protected ArrayList<String> charset;		//stores characters or character sequences
+public abstract class PermutationAlgorithm<T> implements Generator{
+	protected ArrayList<T> charset;		//stores characters or character sequences
 	protected ArrayList<Integer> index;			//stores the indices of characters or character sequences in charset
 	protected int [] lengths;					//lengths of passwords to generate
 	protected Integer currentLength;			//stores the index in lengths[] of current length
 	protected boolean lastReached;
 	
 	
-	public PermutationAlgorithm(ArrayList<String> charset, int ... lengths) throws CharsetNullException{
+	public PermutationAlgorithm(ArrayList<Object> charset, int ... lengths) throws CharsetNullException{
 		if(charset == null) throw new CharsetNullException("Charset is empty");
-		this.charset = charset;
+		this.charset = (ArrayList<T>) charset;
 		this.lengths = lengths;
 		lastReached = false;
 	}
@@ -100,8 +100,8 @@ public abstract class PermutationAlgorithm implements Generator{
 	 * returns current password if exists or null and increments
 	 */
 	@Override
-	public String getNextPassword() {
-		String password = getCurrentPassword();
+	public Object getNextPassword() {
+		String password = (String) getCurrentPassword();
 		nextPassword();
 		return password;
 	}
@@ -110,7 +110,7 @@ public abstract class PermutationAlgorithm implements Generator{
 	 * builds a string representation of current password
 	 */
 	@Override
-	public String getCurrentPassword() {
+	public Object getCurrentPassword() {
 		if (lastReached)
 			return null;
 

@@ -45,4 +45,11 @@ public class RandomPassword extends PermutationAlgorithm implements Generator{
 		lengths[0] = length;
 	}
 
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

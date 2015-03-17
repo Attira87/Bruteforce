@@ -15,7 +15,7 @@ public class Bruteforce {
 	"-en\t\tcalculate entropy\n" +
 	"-scp\t\tscrape source to a dictionary\n\n";
 	
-	public static void main(String ... args) throws IOException, InterruptedException, ZipException{
+	public static void main(String ... args) throws IOException, InterruptedException, ZipException, CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException{
 		/*
 		 * The arguments hashmap stores the args either from the command line args or interactive mode args.
 		 * It streamlines the execution of the program for either mode.

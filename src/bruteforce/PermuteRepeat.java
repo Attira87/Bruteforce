@@ -7,9 +7,19 @@ import java.util.Stack;
 public class PermuteRepeat extends PermutationAlgorithm implements Generator {
 	int pointer; 	//index in index ArrayList of current character or character sequence to increment
 
+	public PermuteRepeat(ArrayList<Object> charset, int ... lengths) throws CharsetNullException{
+		super(charset, lengths);
+		
+		currentLength = 0;
+		index = new ArrayList<Integer>(this.lengths[currentLength]);
+		initializeIndex();
+		this.pointer = index.size() - 1;
+	}
+	
 	public PermuteRepeat(String charset, BigInteger start, int length) throws CharsetNullException, IntegerStartGreaterThanNoOfPermutationsException{ // set starting point with an integer, 0 < start < charset.length ^ length
 		this(stringToCharArrayList(charset), start, length);
 	}
+	@SuppressWarnings("unchecked")
 	public PermuteRepeat(ArrayList<String> charset, BigInteger start, int length) throws CharsetNullException, IntegerStartGreaterThanNoOfPermutationsException{
 		super(charset,length);
 		currentLength = 0;
@@ -127,6 +137,15 @@ public class PermuteRepeat extends PermutationAlgorithm implements Generator {
 			index.add(0);
 	}
 
+	public void reset(){
+		currentLength = 0;
+		initializeIndex();
+		pointer = index.size() - 1;
+		lastReached = false;
+		
+		
+		
+	}
 
 	/**
 	 * increment to next position
@@ -137,7 +156,7 @@ public class PermuteRepeat extends PermutationAlgorithm implements Generator {
 		 * brackets indicate where 'pointer' is currently pointing
 		 */
 		
-		if(index.get(pointer).intValue()==charset.size()-1){ // if aa(d), i.e. last char reached
+		if(((Integer) index.get(pointer)).intValue()==charset.size()-1){ // if aa(d), i.e. last char reached
 			do{
 				index.set(pointer,0); 	//sets last char to first char from charset, example: aa(a)
 				pointer--; 				//decrement pointer, example: a(a)a
@@ -154,16 +173,16 @@ public class PermuteRepeat extends PermutationAlgorithm implements Generator {
 					initializeIndex();
 					break;
 				}
-			} while(index.get(pointer).intValue()==charset.size()-1);	//again, if last char reached at current position
+			} while(((Integer) index.get(pointer)).intValue()==charset.size()-1);	//again, if last char reached at current position
 	
 			if(pointer!=-1){ //example: not ()ddd
-				index.set(pointer,index.get(pointer)+1); 				//increment current, example: a(b)a 
+				index.set(pointer,(Integer)index.get(pointer)+1); 				//increment current, example: a(b)a 
 				pointer = index.size()-1; 								//reset pointer to rightmost position, example: ab(a)
 			}
 			if(pointer==-1) //example: ()ddd
 				pointer = index.size()-1; 								//reset pointer to rightmost position, example: ab(a)
 			
-		}else index.set(pointer, index.get(pointer)+1); 				//increment rightmost char, example: aa(b)
+		}else index.set(pointer, (Integer)index.get(pointer)+1); 				//increment rightmost char, example: aa(b)
 	}
 
 	private boolean nextLength() {

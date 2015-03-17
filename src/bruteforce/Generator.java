@@ -1,9 +1,10 @@
 package bruteforce;
 
 public interface Generator {
-	public String getNextPassword();
+	public Object getNextPassword();
 	public void nextPassword();
-	public String getCurrentPassword();
+	public Object getCurrentPassword();
 	public Boolean hasNext();
+	public void reset();
 
 }

@@ -126,10 +126,17 @@ public class Permute extends PermutationAlgorithm implements Generator {
 		}
 	}
 	
+	public void reset(){
+		index.clear();
+		initializeIndex();
+		lastReached = false;
+	}
+	
+	
 	//http://lookupnotes.blogspot.co.uk/2012/04/iterative-and-recursive-algorithms-to.html
 	public void nextPassword(){
 	  int i = lengths[0] - 1;
-	  while (index.get(i-1) >= index.get(i)){
+	  while ((Integer)index.get(i-1) >= (Integer)index.get(i)){
 		  i = i-1;
 		  if(i-1<0){
 			  lastReached = true;
@@ -139,7 +146,7 @@ public class Permute extends PermutationAlgorithm implements Generator {
 	    
 
 	  int j = lengths[0];
-	  while (index.get(j-1) <= index.get(i-1))
+	  while ((Integer)index.get(j-1) <= (Integer)index.get(i-1))
 		  j = j-1;
 
 	  swap(i-1, j-1);    // swap values at positions (i-1) and (j-1)
@@ -154,7 +161,7 @@ public class Permute extends PermutationAlgorithm implements Generator {
 	
 	
 	private void swap(int i, int j){
-		int t = index.get(i);
+		int t = (Integer)index.get(i);
 		index.set(i, index.get(j));
 		index.set(j, t);
 	

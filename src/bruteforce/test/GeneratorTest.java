@@ -37,13 +37,14 @@ public class GeneratorTest {
 //		System.out.println(permuteRepeat.getNextPassword());
 //
 //	}
+
 	
 	@Test
 	public void setIntTest() throws CharsetNullException, IntegerStartGreaterThanNoOfPermutationsException{
 		PermuteRepeat setInteger = new PermuteRepeat("abcdefghijklmnopqwer", BigInteger.valueOf(3199999), 5);
 		String password = "";
 		String expected = "rrrrr";
-		while((password = setInteger.getNextPassword()) != null){
+		while((password = (String) setInteger.getNextPassword()) != null){
 			//System.out.println(password);
 			if(password.equals(expected)) break;
 			
@@ -56,7 +57,7 @@ public class GeneratorTest {
 		permute = new Permute("abcdefg", 5039);
 		String expected = "gfedcba";
 		String password;
-		password = permute.getNextPassword();
+		password = (String) permute.getNextPassword();
 		assertEquals(expected,password);
 
 	}
@@ -64,7 +65,7 @@ public class GeneratorTest {
 	
 	public void runPermute(String expected){
 		String password;
-		while((password = permute.getNextPassword()) != null){
+		while((password = (String) permute.getNextPassword()) != null){
 			//System.out.println(password);
 			if(password.equals(expected)) break;
 		}
@@ -73,7 +74,7 @@ public class GeneratorTest {
 	
 	public void runPermRepeat(String expected){
 		String password;
-		while((password = permuteRepeat.getNextPassword()) != null){
+		while((password = (String) permuteRepeat.getNextPassword()) != null){
 			//System.out.println(password);
 			if(password.equals(expected)) break;
 		}
@@ -164,7 +165,7 @@ public class GeneratorTest {
 		String expected = "aaaa";
 
 		permuteRepeat.nextPassword();
-		password = permuteRepeat.getNextPassword();
+		password = (String) permuteRepeat.getNextPassword();
 		assertEquals(expected, password);	
 	}
 	@SuppressWarnings("deprecation")
@@ -179,12 +180,12 @@ public class GeneratorTest {
 		for(int i = 0; i<5; i++){
 			permuteRepeat.nextPassword();
 		}
-		password1 = permuteRepeat.getNextPassword(); //aaa
+		password1 = (String) permuteRepeat.getNextPassword(); //aaa
 		
 		for(int i = 0; i<124; i++){
 			permuteRepeat.nextPassword();
 		}
-		password2 = permuteRepeat.getNextPassword(); //aaaaa
+		password2 = (String) permuteRepeat.getNextPassword(); //aaaaa
 	
 		assertEquals(new String[]{expected1, expected2}, new String[]{password1,password2});
 
@@ -196,8 +197,8 @@ public class GeneratorTest {
 		int [] lengths = {3,5};
 		permuteRepeat = new PermuteRepeat("abcdefg", "ggg", lengths);
 		String expected = "aaaaa";
-		String password = permuteRepeat.getNextPassword();
-		password = permuteRepeat.getNextPassword();
+		String password = (String) permuteRepeat.getNextPassword();
+		password = (String) permuteRepeat.getNextPassword();
 		
 		assertEquals(expected, password);
 	}
@@ -216,7 +217,7 @@ public class GeneratorTest {
 		String password;
 		String expected = "knifechopsticksfork";
 
-		password = permuteRepeat.getNextPassword();
+		password = (String) permuteRepeat.getNextPassword();
 		
 		assertEquals(expected, password);
 	}

@@ -7,7 +7,7 @@ public class ZipCracker extends Cracker{
 	ZipFile zipFile;
 
 	public ZipCracker(String filename, String pattern, String dictType,
-			String dictPath) throws ZipException {
+			String dictPath) throws ZipException, CharsetNullException, InvalidStartingStringLengthException, StartingSequenceNotPresentInCharsetException {
 		super(pattern, dictType, dictPath);
 		zipFile = new ZipFile(filename);
 	}
